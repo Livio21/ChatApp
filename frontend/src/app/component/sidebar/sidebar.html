@@ -1,12 +1,13 @@
 <aside class="relative">
   <div
-    class="relative flex h-screen flex-col border-r border-zinc-800/80 bg-zinc-900/95 ease-in-out transition-all duration-500 overflow-hidden "
+    class="relative flex h-screen flex-col border-r border-zinc-800/80 bg-zinc-900/95 ease-in-out  transition-all duration-500 overflow-hidden "
     [class.w-72]="openBar()"
     [class.w-0]="!openBar()"
      [class.opacity-100]="openBar()"
     [class.opacity-0]="!openBar()"
+    [class.*:hidden]="!openBar()"
   >
-    <div class="border-b border-zinc-800/80 px-4 py-4">
+    <div class="border-b border-zinc-800/80 px-4 py-4" >
       <a
         routerLink="/home"
         class="flex items-center gap-2 outline-none ring-zinc-500/50 focus-visible:ring-2"
