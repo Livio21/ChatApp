@@ -1,0 +1,71 @@
+<div class="flex min-h-screen flex-col">
+  <header
+    class="flex shrink-0 items-center justify-between gap-4 border-b border-zinc-800/80 bg-zinc-900/40 px-6 py-4"
+  >
+    <div class="min-w-0">
+      @if (roomId(); as id) {
+        <a
+          [routerLink]="['/rooms', id]"
+          class="mb-1 inline-flex text-xs font-medium text-zinc-400 hover:text-zinc-300 "
+        >
+          ← Back to messages
+        </a>
+      }
+      <h1 class="truncate text-lg font-semibold text-zinc-100">{{ roomName() }} · Members</h1>
+      <p class="text-xs text-zinc-500">Placeholder roster until API exists</p>
+    </div>
+  </header>
+
+  <div class="flex flex-1 flex-col gap-8 p-6 lg:flex-row">
+    <section class="flex-1">
+      <h2 class="mb-3 text-xs font-medium uppercase tracking-wider text-zinc-500">In this room</h2>
+      <ul class="space-y-2">
+        @for (m of members(); track m) {
+          <li
+            class="flex items-center justify-between gap-3  border border-zinc-800/80 bg-zinc-900/30 px-4 py-3"
+          >
+          <div class="flex items-center gap-3 ">
+            <span
+              class="flex h-9 w-9 items-center justify-center  bg-zinc-800 text-sm font-medium text-zinc-300"
+            >
+              {{ m.charAt(0).toUpperCase() }}
+            </span>
+            <span class="text-sm font-medium text-zinc-200">{{ m }}</span>
+          </div>
+          <button class="bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-red-800">Remove</button>
+          </li>
+        }
+      </ul>
+    </section>
+
+    <section class="lg:w-80">
+      <h2 class="mb-3 text-xs font-medium uppercase tracking-wider text-zinc-500">Add member</h2>
+      <form
+        class="space-y-3  border border-zinc-800 bg-zinc-900/40 p-4"
+        (ngSubmit)="addMember()"
+      >
+        <label class="block text-sm text-zinc-400">
+          Username
+          <input
+            type="text"
+            name="username"
+            [(ngModel)]="username"
+            class="mt-1 w-full  border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500"
+            placeholder="e.g. sam"
+            autocomplete="off"
+          />
+        </label>
+        <button
+          type="submit"
+          class="w-full  bg-zinc-600 py-2 text-sm font-medium text-white hover:bg-zinc-500"
+        >
+          Add (placeholder)
+        </button>
+        <p class="text-xs leading-relaxed text-zinc-500">
+          This only updates local placeholder state. It will call your Spring API once member invites
+          exist.
+        </p>
+      </form>
+    </section>
+  </div>
+</div>

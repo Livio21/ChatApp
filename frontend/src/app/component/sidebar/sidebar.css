@@ -1,0 +1,10 @@
+.sidebar-room-active {
+  background-color: rgb(39 39 42 / 0.85);
+  color: rgb(244 244 245);
+  border: 1px solid gray;
+  padding-left: calc(0.75rem - 3px);
+}
+
+.sidebar-room-link:not(.sidebar-room-active) {
+  border-left: 3px solid transparent;
+}

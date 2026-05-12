@@ -1,0 +1,81 @@
+<aside class="relative">
+  <div
+    class="relative flex h-screen flex-col border-r border-zinc-800/80 bg-zinc-900/95 ease-in-out transition-all duration-500 overflow-hidden "
+    [class.w-72]="openBar()"
+    [class.w-0]="!openBar()"
+     [class.opacity-100]="openBar()"
+    [class.opacity-0]="!openBar()"
+  >
+    <div class="border-b border-zinc-800/80 px-4 py-4">
+      <a
+        routerLink="/home"
+        class="flex items-center gap-2 outline-none ring-zinc-500/50 focus-visible:ring-2"
+      >
+        <span
+          class="flex h-9 w-9 items-center justify-center bg-zinc-600 text-sm font-bold text-white"
+          >C</span
+        >
+        <div>
+          <p class="text-sm font-semibold tracking-tight text-zinc-100">ChatApp</p>
+          <p class="text-xs text-zinc-500">Placeholder UI</p>
+        </div>
+      </a>
+    </div>
+
+    <div class="border-b border-zinc-800/80 px-4 py-3">
+      <p class="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-500">Join a room</p>
+      <div class="flex gap-2">
+        <input
+          type="text"
+          class="min-w-0 flex-1 border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500"
+          placeholder="Invite code"
+          [value]="joinCodeInput()"
+          (input)="setJoinCode($any($event.target).value)"
+          (keydown.enter)="joinRoom()"
+        />
+        <button
+          type="button"
+          class="shrink-0 bg-zinc-600 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-500"
+          (click)="joinRoom()"
+        >
+          Join
+        </button>
+      </div>
+    </div>
+
+    <nav class="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto px-2 py-3">
+      <p class="px-2 pb-1 text-xs font-medium uppercase tracking-wider text-zinc-500">Your rooms</p>
+      @for (room of rooms(); track room.id) {
+        <a
+          [routerLink]="['/rooms', room.id]"
+          routerLinkActive="sidebar-room-active"
+          [routerLinkActiveOptions]="{ exact: false }"
+          class=" px-3 py-2.5 text-sm text-zinc-300 transition-colors hover:bg-zinc-800/80 hover:text-zinc-100"
+        >
+          <span class="block truncate font-medium">{{ room.name }}</span>
+        </a>
+      } @empty {
+        <p class="px-3 py-6 text-center text-sm leading-relaxed text-zinc-500">
+          No rooms yet. Enter a join code above to add a placeholder room.
+        </p>
+      }
+    </nav>
+
+    <div class="border-t border-zinc-800/80 p-3">
+      <button
+        type="button"
+        class="flex w-full items-center justify-center gap-2 border border-zinc-700 bg-zinc-950 px-3 py-2.5 text-sm font-medium text-zinc-300 transition-colors hover:border-zinc-600 hover:bg-zinc-800/50 hover:text-zinc-100"
+        (click)="logout()"
+      >
+        Log out
+      </button>
+    </div>
+  </div>
+  <button
+    class="absolute bg-zinc-600 p-2 top-1/2 -translate-y-1/2 -right-8 text-center hover:bg-zinc-500 transition-transform"
+    
+    (click)="toggleSidebar()"
+  >
+    <img src="/arrow.svg" alt="toggle" class="w-4 h-4" [class.rotate-180]="!openBar()"/>
+  </button>
+</aside>

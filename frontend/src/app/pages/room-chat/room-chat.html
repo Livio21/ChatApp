@@ -1,0 +1,40 @@
+<div class="flex h-screen min-h-0 flex-col">
+  <header
+    class="flex shrink-0 items-center justify-between gap-4 border-b border-zinc-800/80 bg-zinc-900/40 px-6 py-4"
+  >
+    <div class="min-w-0">
+      <h1 class="truncate text-lg font-semibold text-zinc-100">{{ roomName() }}</h1>
+      <p class="text-xs text-zinc-500">Messages · placeholder data</p>
+    </div>
+    @if (roomId(); as id) {
+      <a
+        [routerLink]="['/rooms', id, 'members']"
+        class="shrink-0  border border-zinc-700 bg-zinc-950 px-4 py-2 text-sm font-medium text-zinc-200 hover:border-zinc-600 hover:bg-zinc-900"
+      >
+        Members
+      </a>
+    }
+  </header>
+
+  <div class=" flex min-h-0 flex-1 flex-col justify-end gap-3 overflow-y-auto p-6">
+    @for (msg of messages(); track msg.id) {
+      <article
+        class="px-4 py-3 "
+      >
+        <div class="flex items-baseline justify-between gap-2 max-w-fit">
+          <span class="text-sm font-medium text-zinc-300">{{ msg.author }}</span>
+          <time class="text-xs tabular-nums text-zinc-500">{{ msg.time }}</time>
+        </div>
+        <p class="mt-1 text-sm leading-relaxed text-zinc-300">{{ msg.preview }}</p>
+      </article>
+    }
+  </div>
+
+  <footer class="shrink-0 border-t border-zinc-800/80 bg-zinc-900/40 p-4">
+    <div
+      class="flex items-center gap-3  border border-dashed border-zinc-700 bg-zinc-950/50 px-4 py-3"
+    >
+      <span class="text-sm text-zinc-500">Message input will go here after API integration.</span>
+    </div>
+  </footer>
+</div>

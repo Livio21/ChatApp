@@ -1,0 +1,67 @@
+<div class="flex min-h-screen items-center justify-center bg-zinc-950 p-6">
+  <form
+    class="w-full max-w-sm space-y-4  border border-zinc-800 bg-zinc-900/60 p-8 shadow-xl backdrop-blur-sm"
+    (ngSubmit)="submit()"
+  >
+    <h1 class="text-xl font-semibold tracking-tight text-zinc-50">Create account</h1>
+
+    @if (error(); as err) {
+      <p class=" border border-red-900/50 bg-red-950/40 px-3 py-2 text-sm text-red-300">
+        {{ err }}
+      </p>
+    }
+
+    <label class="block text-sm font-medium text-zinc-400">
+      Username
+      <input
+        class="mt-1.5 w-full  border border-zinc-700 bg-zinc-950 px-3 py-2.5 text-zinc-100 placeholder:text-zinc-600 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500"
+        type="text"
+        name="username"
+        [(ngModel)]="username"
+        required
+        autocomplete="username"
+      />
+    </label>
+
+    <label class="block text-sm font-medium text-zinc-400">
+      Email
+      <input
+        class="mt-1.5 w-full  border border-zinc-700 bg-zinc-950 px-3 py-2.5 text-zinc-100 placeholder:text-zinc-600 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500"
+        type="email"
+        name="email"
+        [(ngModel)]="email"
+        required
+        autocomplete="email"
+      />
+    </label>
+
+    <label class="block text-sm font-medium text-zinc-400">
+      Password
+      <input
+        class="mt-1.5 w-full  border border-zinc-700 bg-zinc-950 px-3 py-2.5 text-zinc-100 placeholder:text-zinc-600 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500"
+        type="password"
+        name="password"
+        [(ngModel)]="password"
+        required
+        autocomplete="new-password"
+      />
+    </label>
+
+    <button
+      class="w-full  bg-zinc-600 py-2.5 text-sm font-semibold text-white shadow-lg shadow-zinc-900/20 hover:bg-zinc-500 disabled:opacity-50"
+      type="submit"
+      [disabled]="loading()"
+    >
+      @if (loading()) {
+        Creating account…
+      } @else {
+        Sign up
+      }
+    </button>
+
+    <p class="text-center text-sm text-zinc-500">
+      Already have an account?
+      <a routerLink="/sign-in" class="font-medium text-zinc-400 hover:text-zinc-300">Sign in</a>
+    </p>
+  </form>
+</div>

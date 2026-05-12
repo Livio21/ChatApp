@@ -1,0 +1,55 @@
+<div class="flex min-h-screen items-center justify-center bg-zinc-950 p-6">
+  <form
+    class="w-full max-w-sm space-y-4  border border-zinc-800 bg-zinc-900/60 p-8 shadow-xl backdrop-blur-sm"
+    (ngSubmit)="submit()"
+  >
+    <h1 class="text-xl font-semibold tracking-tight text-zinc-50">Sign in</h1>
+
+    @if (error(); as err) {
+      <p class=" border border-red-900/50 bg-red-950/40 px-3 py-2 text-sm text-red-300">
+        {{ err }}
+      </p>
+    }
+
+    <label class="block text-sm font-medium text-zinc-400">
+      Email
+      <input
+        class="mt-1.5 w-full  border border-zinc-700 bg-zinc-950 px-3 py-2.5 text-zinc-100 placeholder:text-zinc-600 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500"
+        type="email"
+        name="email"
+        [(ngModel)]="email"
+        required
+        autocomplete="email"
+      />
+    </label>
+
+    <label class="block text-sm font-medium text-zinc-400">
+      Password
+      <input
+        class="mt-1.5 w-full  border border-zinc-700 bg-zinc-950 px-3 py-2.5 text-zinc-100 placeholder:text-zinc-600 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500"
+        type="password"
+        name="password"
+        [(ngModel)]="password"
+        required
+        autocomplete="current-password"
+      />
+    </label>
+
+    <button
+      class="w-full py-2.5 text-sm font-semibold cursor-pointer text-white border border-white/10 hover:bg-white/10 disabled:opacity-50"
+      type="submit"
+      [disabled]="loading()"
+    >
+      @if (loading()) {
+        Signing in…
+      } @else {
+        Sign in
+      }
+    </button>
+
+    <p class="text-center text-sm text-zinc-500">
+      No account?
+      <a routerLink="/sign-up" class="font-medium hover:text-white">Sign up</a>
+    </p>
+  </form>
+</div>
