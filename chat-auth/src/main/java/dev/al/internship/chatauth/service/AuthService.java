@@ -5,6 +5,8 @@ import dev.al.internship.chatauth.model.dto.RegisterRequestDto;
 import dev.al.internship.chatauth.model.entity.JwtResponse;
 import dev.al.internship.chatauth.model.entity.User;
 import dev.al.internship.chatauth.repository.UserRepository;
+import jakarta.persistence.EntityExistsException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -28,15 +30,14 @@ public class AuthService {
         this.authenticationManager = authenticationManager;
     }
 
-    public JwtResponse registerUser(RegisterRequestDto registerReq) throws UsernameNotFoundException, BadCredentialsException {
+    public JwtResponse registerUser(RegisterRequestDto registerReq) throws UsernameNotFoundException, BadCredentialsException, DataIntegrityViolationException {
 
         if(registerReq.getUsername().isEmpty() || registerReq.getEmail().isEmpty() || registerReq.getPassword().isEmpty()) {
             throw new BadCredentialsException("Missing credentials");
-
         }
 
-        if (repository.findByUsername(registerReq.getUsername()).isPresent()) {
-            throw new UsernameNotFoundException("Username already exists");
+        if (repository.findByUsername(registerReq.getEmail()).isPresent()) {
+            throw new DataIntegrityViolationException("Username already exists");
         }
 
         User user = new User();
