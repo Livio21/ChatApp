@@ -39,6 +39,7 @@ public class DefaultSecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((authorize) -> authorize
+//                                .anyRequest().permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 ->

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -14,13 +15,23 @@ import java.util.Set;
 @Getter
 @Setter
 public class ChatRoom {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
     private String description;
-    private Long ownerId;
+    private String ownerId;
 
-    @ManyToMany
-    Set<User> registeredUsers;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "chat_room_users",
+            joinColumns = @JoinColumn(name = "room_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> registeredUsers = new HashSet<>();
+
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+    private Set<ChatMessage> chatMessages = new HashSet<>();
 }
