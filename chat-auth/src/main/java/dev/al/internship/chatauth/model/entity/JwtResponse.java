@@ -11,6 +11,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class JwtResponse {
     private String token;
+    private String userId;
     private String username;
     private Date expiration;
 

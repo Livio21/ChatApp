@@ -8,9 +8,8 @@ import java.io.Serializable;
  * DTO for {@link dev.al.internship.chatapp.model.entity.User}
  */
 @Value
-public class UserDto implements Serializable {
+public class UserDto {
     Long id;
     String username;
     String email;
-    String role;
 }

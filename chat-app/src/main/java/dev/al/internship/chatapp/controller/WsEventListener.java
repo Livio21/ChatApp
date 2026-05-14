@@ -7,7 +7,10 @@ import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
+import org.springframework.web.socket.messaging.SessionSubscribeEvent;
+import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 
 @Component
 @RequiredArgsConstructor
@@ -32,4 +35,14 @@ public class WsEventListener {
         messagingTemplate.convertAndSend("/topic/messages", chatMessage);
         
     }
+
+//    @EventListener
+//    public void handleUserActiveInChat(SessionSubscribeEvent e ){
+//
+//    }
+//
+//    @EventListener
+//    public void handleUserInactiveInChat(SessionUnsubscribeEvent e ){
+//
+//    }
 }

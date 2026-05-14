@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { JoinedRoomsService } from '../../services/joined-rooms.service';
+import { ChatRoomStateService } from '../../services/chat-state.service';
+import { AuthService } from '../../services/auth-service';
 
 @Component({
   selector: 'app-home',
@@ -9,7 +10,7 @@ import { JoinedRoomsService } from '../../services/joined-rooms.service';
   styleUrl: './home.css',
 })
 export class Home {
-  protected readonly roomsService = inject(JoinedRoomsService);
+  protected readonly roomsService = inject(ChatRoomStateService);
   protected readonly rooms = this.roomsService.rooms;
   protected readonly hasRooms = this.roomsService.hasRooms;
 
@@ -20,8 +21,13 @@ export class Home {
   }
 
   protected joinRoom(): void {
-    const code = this.joinCodeInput();
-    this.roomsService.joinRoomByCode(code);
+    const roomId = Number(this.joinCodeInput);
+    if (!roomId) {
+      return;
+    }
+
+    this.roomsService.joinRoomById(roomId);
+
     this.joinCodeInput.set('');
   }
 }

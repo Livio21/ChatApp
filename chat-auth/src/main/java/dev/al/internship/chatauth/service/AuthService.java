@@ -5,9 +5,7 @@ import dev.al.internship.chatauth.model.dto.RegisterRequestDto;
 import dev.al.internship.chatauth.model.entity.JwtResponse;
 import dev.al.internship.chatauth.model.entity.User;
 import dev.al.internship.chatauth.repository.UserRepository;
-import jakarta.persistence.EntityExistsException;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -47,7 +45,7 @@ public class AuthService {
         repository.save(user);
         String token = jwtService.generateToken(user);
 
-        JwtResponse jwtResponse = new JwtResponse(token, jwtService.getUsername(token), jwtService.getExpiration(token));
+        JwtResponse jwtResponse = new JwtResponse(token,jwtService.getUserId(token), jwtService.getUsername(token), jwtService.getExpiration(token));
 
         return jwtResponse;
     }
@@ -76,7 +74,7 @@ public class AuthService {
 
         String token = jwtService.generateToken(user);
 
-        JwtResponse jwtResponse = new JwtResponse(token, jwtService.getUsername(token), jwtService.getExpiration(token));
+        JwtResponse jwtResponse = new JwtResponse(token,jwtService.getUserId(token), jwtService.getUsername(token), jwtService.getExpiration(token));
         return jwtResponse;
 
     }

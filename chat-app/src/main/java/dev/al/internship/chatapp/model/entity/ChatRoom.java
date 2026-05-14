@@ -24,14 +24,14 @@ public class ChatRoom {
     private String description;
     private String ownerId;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     @JoinTable(
             name = "chat_room_users",
             joinColumns = @JoinColumn(name = "room_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private Set<User> registeredUsers = new HashSet<>();
+    private Set<User> registeredUsers;
 
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
-    private Set<ChatMessage> chatMessages = new HashSet<>();
+    @OneToMany(mappedBy = "roomId", cascade = CascadeType.ALL)
+    private Set<ChatMessage> chatMessages;
 }

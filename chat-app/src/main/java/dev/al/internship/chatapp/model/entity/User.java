@@ -17,9 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
     private String username;
     private String email;
-    private String role;
+
+
+
 }

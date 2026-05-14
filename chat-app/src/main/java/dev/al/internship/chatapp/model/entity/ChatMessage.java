@@ -25,5 +25,5 @@ public class ChatMessage {
 
     @ManyToOne
     @JoinColumn(name = "room_id")
-    private ChatRoom room;
+    private ChatRoom roomId;
 }

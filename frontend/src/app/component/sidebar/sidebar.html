@@ -44,6 +44,37 @@
       </div>
     </div>
 
+    
+    <div class="border-b border-zinc-800/80 px-4 py-3">
+      <p class="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-500">Create a room</p>
+      <div class="flex flex-col gap-2">
+        <input
+          type="text"
+          class="min-w-0 flex-1 border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500"
+          placeholder="Room Name"
+         [value]="roomValues().name"
+(input)="setRoomName($any($event.target).value)"
+          (keydown.enter)="createRoom()"
+          required
+        />
+        
+        <textarea name="room-description" id="description" 
+          class="min-w-0 flex-1 border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500"
+         [value]="roomValues().description"
+(input)="setRoomDescription($any($event.target).value)"
+         placeholder="Room Description"
+        ></textarea>
+       
+        <button
+          type="button"
+          class="shrink-0 bg-zinc-600 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-500"
+          (click)="createRoom()"
+        >
+          Create
+        </button>
+      </div>
+    </div>
+
     <nav class="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto px-2 py-3">
       <p class="px-2 pb-1 text-xs font-medium uppercase tracking-wider text-zinc-500">Your rooms</p>
       @for (room of rooms(); track room.id) {

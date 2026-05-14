@@ -5,6 +5,7 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -29,19 +30,42 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
     ) {
 
         StompHeaderAccessor accessor =
-                StompHeaderAccessor.wrap(message);
+                MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
-        if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+        if (accessor == null || accessor.getCommand() == null) {
+            return message;
+        }
 
-            String auth =
-                    accessor.getFirstNativeHeader("Authorization");
+        System.out.println("STOMP COMMAND = " + accessor.getCommand());
+        System.out.println("HEADERS = " + accessor.toNativeHeaderMap());
+        if (StompCommand.CONNECT.equals(accessor.getCommand())
+                || StompCommand.SEND.equals(accessor.getCommand())
+                || StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {
 
-            if (auth == null || !auth.startsWith("Bearer ")) {
-                throw new IllegalArgumentException("Missing JWT token");
+            String token = null;
+
+            List<String> authHeader = accessor.getNativeHeader("Authorization");
+            if (authHeader != null && !authHeader.isEmpty()) {
+                token = authHeader.get(0);
             }
 
-            Jwt jwt =
-                    jwtDecoder.decode(auth.substring(7));
+
+            if (token == null) {
+                List<String> alt = accessor.getNativeHeader("authorization");
+                if (alt != null && !alt.isEmpty()) {
+                    token = alt.get(0);
+                }
+            }
+
+            if (token == null || token.isBlank()) {
+                return message;
+            }
+
+            if (token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+
+            Jwt jwt = jwtDecoder.decode(token);
 
             Authentication authentication =
                     new UsernamePasswordAuthenticationToken(

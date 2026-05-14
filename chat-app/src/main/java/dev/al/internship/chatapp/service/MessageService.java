@@ -2,7 +2,9 @@ package dev.al.internship.chatapp.service;
 
 import dev.al.internship.chatapp.model.dto.ChatMessageDto;
 import dev.al.internship.chatapp.model.entity.ChatMessage;
+import dev.al.internship.chatapp.repository.ChatRoomRepository;
 import dev.al.internship.chatapp.repository.MessageRepository;
+import dev.al.internship.chatapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,17 +16,17 @@ public class MessageService {
 
     private final MessageRepository repository;
 
-    public ChatMessageDto processIncoming(ChatMessageDto dto) {
+    public ChatMessageDto processIncoming(ChatMessageDto chatMessageDto) {
 
-        ChatMessage entity = ChatMessage.builder()
-                .message(dto.getMessage())
-                .sender(dto.getSender())
+        ChatMessage message = ChatMessage.builder()
+                .message(chatMessageDto.getMessage())
+                .sender(chatMessageDto.getSender())
                 .creationDate(LocalDateTime.now().toString())
-                .messageType(dto.getMessageType())
+                .messageType(chatMessageDto.getMessageType())
                 .build();
 
-        repository.save(entity);
+        repository.save(message);
 
-        return dto;
+        return chatMessageDto;
     }
 }

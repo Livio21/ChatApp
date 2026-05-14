@@ -9,8 +9,9 @@ import lombok.Value;
  */
 @Value
 public class ChatMessageDto {
+    Long id;
     String message;
-     String sender;
-     String creationDate;
-     MessageType messageType;
+    String sender;
+    String creationDate;
+    MessageType messageType;
 }

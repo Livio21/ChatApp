@@ -16,25 +16,44 @@
     }
   </header>
 
-  <div class=" flex min-h-0 flex-1 flex-col justify-end gap-3 overflow-y-auto p-6">
-    @for (msg of messages(); track msg.id) {
+  <div class=" flex min-h-0 flex-1 flex-col justify-end gap-1 overflow-y-auto ">
+    @for (msg of messages(); track $index) {
       <article
         class="px-4 py-3 "
       >
+      @if (msg.messageType === 'JOIN') {
+        <span class="italic text-zinc-500">{{ msg.sender }} joined the room</span>
+      } @else if (msg.messageType === 'LEAVE') {
+        <span class="italic text-zinc-500">{{ msg.sender }} left the room</span>
+      } @else {
         <div class="flex items-baseline justify-between gap-2 max-w-fit">
-          <span class="text-sm font-medium text-zinc-300">{{ msg.author }}</span>
-          <time class="text-xs tabular-nums text-zinc-500">{{ msg.time }}</time>
+          <span class="text-sm font-medium text-zinc-300">{{ msg.sender }}</span>
+          <time class="text-xs tabular-nums text-zinc-500">{{ msg.creationDate | date: 'HH:mm' }}</time>
         </div>
-        <p class="mt-1 text-sm leading-relaxed text-zinc-300">{{ msg.preview }}</p>
+        <p class="mt-1 text-sm leading-relaxed text-zinc-300">
+          {{ msg.message }}
+        </p>
+        }
       </article>
     }
   </div>
 
   <footer class="shrink-0 border-t border-zinc-800/80 bg-zinc-900/40 p-4">
-    <div
-      class="flex items-center gap-3  border border-dashed border-zinc-700 bg-zinc-950/50 px-4 py-3"
-    >
-      <span class="text-sm text-zinc-500">Message input will go here after API integration.</span>
-    </div>
+    <form (submit)="sendMessage(); $event.preventDefault()" class="flex items-center gap-3">
+      <input
+        type="text"
+        [ngModel]="newMessage()"
+        (ngModelChange)="newMessage.set($event)"
+        name="newMessage"
+        placeholder="Type a message..."
+        class="flex-1 border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm text-zinc-100 placeholder-zinc-500 focus:border-zinc-500 focus:outline-none"
+      />
+      <button
+        type="submit"
+        class="border border-zinc-700 bg-zinc-950 px-6 py-3 text-sm font-medium text-zinc-200 hover:border-zinc-600 hover:bg-zinc-900"
+      >
+        Send
+      </button>
+    </form>
   </footer>
 </div>

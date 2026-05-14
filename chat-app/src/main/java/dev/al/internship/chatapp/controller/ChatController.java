@@ -35,19 +35,4 @@ public class ChatController {
                 processed
         );
     }
-
-    @MessageMapping("/chat.addUser/{roomId}")
-    public void addUser(
-            @DestinationVariable String roomId,
-            @Payload ChatMessageDto message,
-            SimpMessageHeaderAccessor accessor
-    ) {
-
-        accessor.getSessionAttributes().put("username", message.getSender());
-
-        messagingTemplate.convertAndSend(
-                "/topic/messages/" + roomId,
-                message
-        );
-    }
 }

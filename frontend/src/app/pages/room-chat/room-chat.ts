@@ -1,45 +1,86 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnDestroy, computed } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { JoinedRoomsService } from '../../services/joined-rooms.service';
-
-interface PlaceholderMessage {
-  id: string;
-  author: string;
-  preview: string;
-  time: string;
-}
+import { ChatRoomStateService } from '../../services/chat-state.service';
+import {
+  ChatSocketService,
+  ChatMessageType,
+  ChatMessagePayload,
+} from '../../services/websocket.service';
+import { FormsModule } from '@angular/forms';
+import { DatePipe } from '@angular/common';
+import { AuthService } from "../../services/auth-service";
 
 @Component({
   selector: 'app-room-chat',
-  imports: [RouterLink],
+  standalone: true,
+  imports: [RouterLink, FormsModule, DatePipe],
   templateUrl: './room-chat.html',
   styleUrl: './room-chat.css',
 })
-export class RoomChat {
+export class RoomChat implements OnDestroy {
   private readonly route = inject(ActivatedRoute);
-  private readonly roomsService = inject(JoinedRoomsService);
+  private readonly roomsService = inject(ChatRoomStateService);
+  private readonly socket = inject(ChatSocketService);
+  private readonly auth = inject(AuthService);
 
-  protected readonly roomId = signal<string | null>(null);
-  protected readonly roomName = signal<string>('Room');
-  protected readonly messages = signal<PlaceholderMessage[]>([
-    { id: '1', author: 'Alex', preview: 'Placeholder: API not wired yet.', time: '10:02' },
-    {
-      id: '2',
-      author: 'Jamie',
-      preview: 'Sounds good — will sync when endpoints exist.',
-      time: '10:04',
-    },
-    { id: '3', author: 'You', preview: 'Mock message thread for layout only.', time: '10:05' },
-    { id: '3', author: 'You', preview: 'Mock message thread for layout only.', time: '10:05' },
-  ]);
+  protected readonly roomId = signal<number | null>(null);
+  protected readonly roomName = computed(() => {
+    const id = this.roomId();
+
+    if (id === null) return 'Room';
+
+    return this.roomsService.roomById(id)?.name ?? 'Unknown room';
+  });
+  protected readonly messages = computed(() => {
+    const id = this.roomId();
+    if (id === null) return [];
+
+    return this.roomsService.messages()[id] ?? [];
+  });
+  protected readonly newMessage = signal('');
 
   constructor() {
     this.route.paramMap.pipe(takeUntilDestroyed()).subscribe((params) => {
-      const id = params.get('roomId');
+      const rawId = params.get('roomId');
+      const id = rawId ? Number(rawId) : null;
+
+      if (id !== null && Number.isNaN(id)) {
+        this.roomId.set(null);
+        return;
+      }
+
+      const previousId = this.roomId();
+
+      if (previousId !== null && previousId !== id) {
+        this.socket.unsubscribeFromRoom(previousId);
+      }
+
       this.roomId.set(id);
-      const room = id ? this.roomsService.roomById(id) : undefined;
-      this.roomName.set(room?.name ?? 'Unknown room');
+
     });
+  }
+
+  ngOnDestroy(): void {
+    const id = this.roomId();
+    if (id !== null) {
+      this.socket.unsubscribeFromRoom(id);
+    }
+  }
+
+  protected sendMessage(): void {
+    const text = this.newMessage().trim();
+    const id = this.roomId();
+
+    if (!text || id === null) return;
+
+    this.socket.sendMessage(id, {
+      message: text,
+      sender: this.auth.getUsername(),
+      creationDate: new Date().toISOString(),
+      messageType: ChatMessageType.CHAT_MESSAGE,
+    });
+
+    this.newMessage.set('');
   }
 }
