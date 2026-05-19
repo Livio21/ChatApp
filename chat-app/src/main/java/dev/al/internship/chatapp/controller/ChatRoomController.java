@@ -3,7 +3,6 @@ package dev.al.internship.chatapp.controller;
 import dev.al.internship.chatapp.model.dto.ChatMessageDto;
 import dev.al.internship.chatapp.model.dto.ChatRoomDto;
 import dev.al.internship.chatapp.model.dto.UserDto;
-import dev.al.internship.chatapp.model.entity.ChatMessage;
 import dev.al.internship.chatapp.model.entity.ChatRoom;
 import dev.al.internship.chatapp.model.entity.User;
 import dev.al.internship.chatapp.service.ChatRoomService;
@@ -37,12 +36,13 @@ public class ChatRoomController {
         ChatRoom chatRoom = chatRoomService.getChatRoomById(roomId);
         Set<UserDto> users = chatRoomService.getUsers(roomId);
         Set<ChatMessageDto> messages =  chatRoomService.getMessages(roomId);
+        UserDto owner = chatRoomService.getOwner(roomId);
 
         return new ChatRoomDto(
                 chatRoom.getId(),
                 chatRoom.getName(),
                 chatRoom.getDescription(),
-                chatRoom.getOwnerId(),
+                owner,
                 users,
                 messages
         );
@@ -77,8 +77,10 @@ public class ChatRoomController {
 //    }
 
     @GetMapping("/chat-rooms")
-    public List<ChatRoomDto> getChatRooms() {
-        return chatRoomService.getAllChatRoomsDto();
+    public List<ChatRoomDto> getChatRooms(
+            Authentication authentication
+    ) {
+        return chatRoomService.getAllChatRoomsDtoWhereMember(authentication);
     }
 
     @PostMapping("/add-room")
@@ -88,13 +90,8 @@ public class ChatRoomController {
     ) {
 
         User user = userService.syncUser(authentication);
-        Set<User> users = new HashSet<>();
-
-        chatRoom.setOwnerId(String.valueOf(user.getId()));
-        users.add(user);
-        chatRoom.setRegisteredUsers(users);
+        chatRoom.setOwner(user);
         chatRoomService.createChatRoom(chatRoom);
-
     }
 
     @PostMapping("/chat-rooms/{roomId}/join")
@@ -106,6 +103,17 @@ public class ChatRoomController {
         User user = userService.syncUser(authentication);
 
         chatRoomService.joinRoom(roomId, user.getId());
+
+    }
+
+    @PostMapping("/chat-rooms/{roomId}/remove/{userId}")
+    public void removeMember(
+            @PathVariable long roomId,
+            @PathVariable long userId,
+            Authentication authentication
+    ) {
+
+        chatRoomService.removeMember(roomId, userId, authentication);
 
     }
 }

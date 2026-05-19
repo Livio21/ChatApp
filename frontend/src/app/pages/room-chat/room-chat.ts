@@ -82,7 +82,7 @@ export class RoomChat implements OnDestroy {
     this.socket.sendMessage(id, {
       message: text,
       messageType: ChatMessageType.CHAT_MESSAGE,
-      roomId: id.toString(),
+      roomId: id,
     });
 
     this.newMessage.set('');

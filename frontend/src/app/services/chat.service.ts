@@ -17,6 +17,10 @@ export class ChatRoomApiService {
     return this.http.post<void>(`/api/chat-rooms/${roomId}/join`, {});
   }
 
+  removeMember(roomId: number, userId: number): Observable<void> {
+    return this.http.post<void>(`/api/chat-rooms/${roomId}/remove/${userId}`, {});
+  }
+
   getRooms(): Observable<ChatRoom[]> {
     return this.http.get<ChatRoom[]>(`/api/chat-rooms`);
   }

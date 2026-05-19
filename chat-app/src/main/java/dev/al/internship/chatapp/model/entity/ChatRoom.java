@@ -22,7 +22,9 @@ public class ChatRoom {
 
     private String name;
     private String description;
-    private String ownerId;
+
+    @ManyToOne()
+    private User owner;
 
     @ManyToMany
     @JoinTable(

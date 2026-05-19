@@ -33,11 +33,32 @@ public class WsEventListener {
                 .build();
 
         messagingTemplate.convertAndSend("/topic/messages", chatMessage);
-        
+
+    }
+
+    @EventListener
+    public void handleWsConnectListener( SessionSubscribeEvent e ){
+
+        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(e.getMessage());
+        String username = headerAccessor.getSessionAttributes().get("principal").toString();
+
+        if (username == null) {
+            return;
+        }
+
+        ChatMessage chatMessage = ChatMessage.builder()
+                .messageType(MessageType.JOIN)
+                .sender(username)
+                .build();
+
+        messagingTemplate.convertAndSend("/topic/messages", chatMessage);
+
     }
 
 //    @EventListener
 //    public void handleUserActiveInChat(SessionSubscribeEvent e ){
+//
+//
 //
 //    }
 //

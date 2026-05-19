@@ -11,12 +11,18 @@
           ← Back to messages
         </a>
       }
-      <h1 class="truncate text-lg font-semibold text-zinc-100">{{ roomName() }} · Members</h1>
+      <h1 class="truncate text-lg font-semibold text-zinc-100">Room: {{ roomName() }} // Join Code : "{{ roomId() }}"</h1>
       <p class="text-xs text-zinc-500">Total members: {{ members().length }}</p>
     </div>
-  </header>
 
-  <div class="flex flex-1 flex-col gap-8 p-6 lg:flex-row">
+    @if(owner()?.username == currentUsername()) {
+      <h1 class="truncate text-lg font-semibold text-indigo-300">You are the owner</h1>
+    }@else{
+      <h1 class="truncate text-lg font-semibold text-zinc-100">Owner: {{ owner()?.username }}</h1>
+    }
+  </header>
+  
+  <div class="flex flex-1 max-w-1/2 flex-col gap-8 p-6 lg:flex-row">
     <section class="flex-1">
       <h2 class="mb-3 text-xs font-medium uppercase tracking-wider text-zinc-500">In this room</h2>
       <ul class="space-y-2">
@@ -32,13 +38,17 @@
             </span>
             <span class="text-sm font-medium text-zinc-200">{{ m.username }}</span>
           </div>
-          <button class="bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-red-800">Remove</button>
+          @if (owner()?.username == currentUsername() ) {
+          <button class="bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-red-800"
+            (click)="removeMember(m)"
+          >Remove</button>
+          }
           </li>
         }
       </ul>
     </section>
 
-    <section class="lg:w-80">
+    <!-- <section class="lg:w-80 cursor-not-allowed ">
       <h2 class="mb-3 text-xs font-medium uppercase tracking-wider text-zinc-500">Add member</h2>
       <form
         class="space-y-3  border border-zinc-800 bg-zinc-900/40 p-4"
@@ -48,15 +58,17 @@
           <input
             type="text"
             name="username"
-            [(ngModel)]="username"
+            
             class="mt-1 w-full  border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500"
             placeholder="e.g. sam"
             autocomplete="off"
+            disabled
           />
         </label>
         <button
           type="submit"
           class="w-full  bg-zinc-600 py-2 text-sm font-medium text-white hover:bg-zinc-500"
+          disabled
         >
           Add Member
         </button>
@@ -64,6 +76,6 @@
           Enter a username to invite them to this room.
         </p>
       </form>
-    </section>
+    </section> -->
   </div>
 </div>

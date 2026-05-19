@@ -37,6 +37,7 @@ export class ChatRoomStateService {
           [roomId]: [...currentMessages, payload as ChatMessage],
         };
       });
+      console.log(`Received message for room ${roomId}:`, payload as ChatMessage , 'Current messages:', this._messages()[roomId]);
     });
   }
 
@@ -135,27 +136,23 @@ export class ChatRoomStateService {
     });
   }
 
-  addMember(roomId: number, user: RegisteredUser): void {
-    this._members.update((m) => {
-      const current = m[roomId] ?? [];
+  // addMember(roomId: number, user: RegisteredUser): void {
+  //   this._members.update((m) => {
+  //     const current = m[roomId] ?? [];
 
-      if (current.some((u) => u.id === user.id)) return m;
+  //     if (current.some((u) => u.id === user.id)) return m;
 
-      return {
-        ...m,
-        [roomId]: [...current, user],
-      };
-    });
-  }
+  //     return {
+  //       ...m,
+  //       [roomId]: [...current, user],
+  //     };
+  //   });
+  // }
 
   removeMember(roomId: number, userId: number): void {
-    this._members.update((m) => {
-      const current = m[roomId] ?? [];
-
-      return {
-        ...m,
-        [roomId]: current.filter((u) => u.id !== userId),
-      };
+    this.api.removeMember(roomId, userId).subscribe({
+      next: () => this.loadRooms(),
+      error: (err) => console.error('Failed to remove member', err),
     });
   }
 
@@ -168,7 +165,7 @@ export class ChatRoomStateService {
       id: room.id,
       name: room.name,
       description: room.description,
-      ownerId: String(room.ownerId ?? room.ownerId ?? ''),
+      owner: room.owner ?? null,
       registeredUsers: room.registeredUsers ?? room.users ?? [],
       chatMessages: room.chatMessages ?? room.messages ?? [],
     };

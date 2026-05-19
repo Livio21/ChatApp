@@ -16,9 +16,9 @@ import java.util.Set;
 @Value
 public class ChatRoomDto{
     Long id;
-     String name;
-     String description;
-     String ownerId;
-     Set<UserDto> users;
-     Set<ChatMessageDto> chatMessages;
+    String name;
+    String description;
+    UserDto owner;
+    Set<UserDto> users;
+    Set<ChatMessageDto> chatMessages;
 }

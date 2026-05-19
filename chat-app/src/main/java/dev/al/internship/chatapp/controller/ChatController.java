@@ -29,19 +29,21 @@ public class ChatController {
 
 //        chatRoomService.assertMember(roomId, principal.getName());
 
+        System.out.println("Principal : " + principal);
 
-                messageService.processIncoming(
-                        roomId,
-                        message,
-                        principal.getName()
-                );
+
+        ChatMessageDto newMessage =  messageService.processIncoming(
+                roomId,
+                message,
+                principal.getName()
+        );
 
 
 
 
         messagingTemplate.convertAndSend(
                 "/topic/messages/" + roomId,
-                message
+                newMessage
         );
     }
 }

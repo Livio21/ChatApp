@@ -10,14 +10,14 @@ export interface ChatMessage {
   sender: string;
   creationDate: string;
   messageType: string;
-  roomId: string;
+  roomId: number;
 }
 
 export interface ChatRoom {
   id: number;
   name: string;
   description: string;
-  ownerId: string;
+  owner: RegisteredUser;
   registeredUsers: RegisteredUser[];
   chatMessages: ChatMessage[];
 }

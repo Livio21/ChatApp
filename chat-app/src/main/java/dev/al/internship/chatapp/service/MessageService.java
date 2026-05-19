@@ -3,8 +3,10 @@ package dev.al.internship.chatapp.service;
 import dev.al.internship.chatapp.model.dto.ChatMessageDto;
 import dev.al.internship.chatapp.model.entity.ChatMessage;
 import dev.al.internship.chatapp.model.entity.ChatRoom;
+import dev.al.internship.chatapp.model.entity.MessageType;
 import dev.al.internship.chatapp.repository.ChatRoomRepository;
 import dev.al.internship.chatapp.repository.MessageRepository;
+import dev.al.internship.chatapp.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,9 +19,10 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final UserRepository userRepository;
 
     @Transactional
-    public void processIncoming(
+    public ChatMessageDto processIncoming(
             long roomId,
             ChatMessageDto dto,
             String sender
@@ -29,23 +32,23 @@ public class MessageService {
                 .orElseThrow(() ->
                         new RuntimeException("Room not found"));
 
-        ChatMessage message = ChatMessage.builder()
-                .message(dto.getMessage())
-                .sender(sender)
-                .creationDate(LocalDateTime.now().toString())
-                .messageType(dto.getMessageType())
-                .room(room)
-                .build();
+            ChatMessage message = ChatMessage.builder()
+                    .message(dto.getMessage())
+                    .sender(sender)
+                    .creationDate(LocalDateTime.now().toString())
+                    .messageType(dto.getMessageType())
+                    .room(room)
+                    .build();
 
-        ChatMessage saved = messageRepository.save(message);
-
-
-        new ChatMessageDto(
-                saved.getId(),
-                saved.getMessage(),
-                saved.getSender(),
-                saved.getCreationDate(),
-                saved.getMessageType()
+        if(dto.getMessageType().equals(MessageType.CHAT_MESSAGE)){
+            messageRepository.save(message);
+        }
+        return new ChatMessageDto(
+                message.getId(),
+                message.getMessage(),
+                message.getSender(),
+                message.getCreationDate(),
+                message.getMessageType()
         );
     }
 }

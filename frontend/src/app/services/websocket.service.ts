@@ -15,7 +15,7 @@ export interface ChatMessagePayload {
   sender?: string;
   creationDate?: string;
   messageType: ChatMessageType;
-  roomId?: string;
+  roomId?: number;
 }
 
 @Injectable({
@@ -88,7 +88,7 @@ export class ChatSocketService {
 
     this.sendMessage(roomId, {
       messageType: ChatMessageType.JOIN,
-      roomId: roomId.toString(),
+      roomId: roomId,
     });
   }
 
@@ -101,7 +101,7 @@ export class ChatSocketService {
 
     this.sendMessage(roomId, {
       messageType: ChatMessageType.LEAVE,
-      roomId: roomId.toString(),
+      roomId: roomId,
     });
   }
 
@@ -111,6 +111,7 @@ export class ChatSocketService {
       return;
     }
 
+    console.log(payload);
     this.client.publish({
       destination: `/app/chat/${roomId}`,
       body: JSON.stringify(payload),

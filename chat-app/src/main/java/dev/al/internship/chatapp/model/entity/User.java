@@ -8,6 +8,8 @@ import lombok.Setter;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.Set;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,6 +23,7 @@ public class User {
     private String username;
     private String email;
 
-
+    @OneToMany()
+    private Set<ChatRoom> chatRoomSet;
 
 }

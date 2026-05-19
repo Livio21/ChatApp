@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ChatRoomStateService } from '../../services/chat-state.service';
 import { RegisteredUser } from "../../models/chat-room";
+import { AuthService } from "../../services/auth-service";
 
 @Component({
   selector: 'app-room-members',
@@ -15,8 +16,15 @@ import { RegisteredUser } from "../../models/chat-room";
 export class RoomMembers {
   private readonly route = inject(ActivatedRoute);
   private readonly roomsService = inject(ChatRoomStateService);
+    private readonly auth = inject(AuthService);
 
   protected readonly roomId = signal<number | null>(null);
+  protected readonly currentUsername = computed(() => this.auth.getUsername());
+  protected readonly owner = computed(() => {
+    const id = this.roomId();
+    if (id === null) return null;
+    return this.roomsService.roomById(id)?.owner ?? null;
+  });
   protected readonly roomName = computed(() => {
     const id = this.roomId();
     if (id === null) return 'Room';
@@ -29,8 +37,6 @@ export class RoomMembers {
 
     return this.roomsService.members()[id] ?? [];
   });
-
-  username = '';
 
   constructor() {
     this.route.paramMap.pipe(takeUntilDestroyed()).subscribe((params) => {
@@ -60,4 +66,8 @@ export class RoomMembers {
   //   this.username = '';
   //   this.members.set(this.roomsService.membersForRoom(id));
   // }
+
+  protected removeMember(member: RegisteredUser): void {
+    this.roomsService.removeMember(this.roomId()!, member.id);
+  }
 }

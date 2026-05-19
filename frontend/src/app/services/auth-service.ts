@@ -33,6 +33,7 @@ export class AuthService {
   }
 
   getUsername(): string | null {
+    console.log('Getting username from localStorage:', localStorage.getItem(USERNAME));
     return localStorage.getItem(USERNAME);
   }
 

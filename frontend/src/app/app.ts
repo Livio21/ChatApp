@@ -14,7 +14,10 @@ export class App {
   private readonly authService = inject(AuthService);
   private readonly chatService = inject(ChatRoomStateService)
   constructor(private socket: ChatSocketService) {
-    this.socket.connect(this.authService.getStoredToken());
-    this.chatService.loadRooms();
+    const token = this.authService.getStoredToken();
+    if (token) {
+      this.socket.connect(token);
+      this.chatService.loadRooms();
+    }
   }
 }
