@@ -22,12 +22,14 @@
         class="px-4 py-3 "
       >
       @if (msg.messageType === 'JOIN') {
-        <span class="italic text-zinc-500">{{ msg.sender }} joined the room</span>
+        <span class="italic text-zinc-500">{{ msg.sender === currentUsername() ? 'You' : msg.sender }} joined the room</span>
       } @else if (msg.messageType === 'LEAVE') {
-        <span class="italic text-zinc-500">{{ msg.sender }} left the room</span>
+        <span class="italic text-zinc-500">{{ msg.sender === currentUsername() ? 'You' : msg.sender }} left the room</span>
       } @else {
         <div class="flex items-baseline justify-between gap-2 max-w-fit">
-          <span class="text-sm font-medium text-zinc-300">{{ msg.sender }}</span>
+          <span class="text-sm font-medium" [class.text-indigo-400]="msg.sender === currentUsername()" [class.text-zinc-300]="msg.sender !== currentUsername()">
+            {{ msg.sender === currentUsername() ? 'You' : msg.sender }}
+          </span>
           <time class="text-xs tabular-nums text-zinc-500">{{ msg.creationDate | date: 'HH:mm' }}</time>
         </div>
         <p class="mt-1 text-sm leading-relaxed text-zinc-300">

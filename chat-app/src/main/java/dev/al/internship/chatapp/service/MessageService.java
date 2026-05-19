@@ -2,9 +2,10 @@ package dev.al.internship.chatapp.service;
 
 import dev.al.internship.chatapp.model.dto.ChatMessageDto;
 import dev.al.internship.chatapp.model.entity.ChatMessage;
+import dev.al.internship.chatapp.model.entity.ChatRoom;
 import dev.al.internship.chatapp.repository.ChatRoomRepository;
 import dev.al.internship.chatapp.repository.MessageRepository;
-import dev.al.internship.chatapp.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,19 +15,37 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class MessageService {
 
-    private final MessageRepository repository;
+    private final MessageRepository messageRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
-    public ChatMessageDto processIncoming(ChatMessageDto chatMessageDto) {
+    @Transactional
+    public void processIncoming(
+            long roomId,
+            ChatMessageDto dto,
+            String sender
+    ) {
+
+        ChatRoom room = chatRoomRepository.findById(roomId)
+                .orElseThrow(() ->
+                        new RuntimeException("Room not found"));
 
         ChatMessage message = ChatMessage.builder()
-                .message(chatMessageDto.getMessage())
-                .sender(chatMessageDto.getSender())
+                .message(dto.getMessage())
+                .sender(sender)
                 .creationDate(LocalDateTime.now().toString())
-                .messageType(chatMessageDto.getMessageType())
+                .messageType(dto.getMessageType())
+                .room(room)
                 .build();
 
-        repository.save(message);
+        ChatMessage saved = messageRepository.save(message);
 
-        return chatMessageDto;
+
+        new ChatMessageDto(
+                saved.getId(),
+                saved.getMessage(),
+                saved.getSender(),
+                saved.getCreationDate(),
+                saved.getMessageType()
+        );
     }
 }

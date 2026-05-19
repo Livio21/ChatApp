@@ -2,7 +2,6 @@ import { Injectable, computed, signal } from '@angular/core';
 import { ChatSocketService } from './websocket.service';
 import { ChatRoomApiService } from './chat.service';
 import { ChatMessage, ChatRoom, RegisteredUser } from "../models/chat-room";
-import { forkJoin } from "rxjs";
 
 @Injectable({
   providedIn: 'root',
@@ -20,13 +19,25 @@ export class ChatRoomStateService {
     private api: ChatRoomApiService,
     private socket: ChatSocketService,
   ) {
- this.socket.messages$.subscribe(({ roomId, payload }) => {
-   this._messages.update((state) => ({
-     ...state,
-     [roomId]: [...(state[roomId] ?? []), payload as ChatMessage],
-   }));
- });
+    this.socket.messages$.subscribe(({ roomId, payload }) => {
+      // Sync members from DB on JOIN/LEAVE
+      if (payload.messageType === 'JOIN' || payload.messageType === 'LEAVE') {
+        this.refreshRoom(roomId);
+      }
 
+      this._messages.update((state) => {
+        const currentMessages = state[roomId] ?? [];
+        // Avoid duplicates if message ID exists (using explicit null/undefined check for ID 0)
+        const hasId = payload.id !== undefined && payload.id !== null;
+        if (hasId && currentMessages.some((m) => m.id === payload.id)) {
+          return state;
+        }
+        return {
+          ...state,
+          [roomId]: [...currentMessages, payload as ChatMessage],
+        };
+      });
+    });
   }
 
   roomById(id: number): ChatRoom | undefined {
@@ -35,42 +46,93 @@ export class ChatRoomStateService {
 
   loadRooms(): void {
     this.api.getRooms().subscribe((rooms) => {
-      rooms.forEach((room) => {
-        this.addRoomToState(room);
-      });
+      const normalizedRooms = rooms.map((room) => this.normalizeRoom(room));
+      this._rooms.set(normalizedRooms);
+      this._members.set(
+        normalizedRooms.reduce((state, room) => ({
+          ...state,
+          [room.id]: room.registeredUsers ?? [],
+        }), {} as Record<number, RegisteredUser[]>),
+      );
+      this._messages.set(
+        normalizedRooms.reduce((state, room) => ({
+          ...state,
+          [room.id]: room.chatMessages ?? [],
+        }), {} as Record<number, ChatMessage[]>),
+      );
     });
   }
 
   createRoom(payload: { name: string; description: string }): void {
-    this.api.createRoom(payload).subscribe((room) => {
-      this.addRoomToState(room);
+    this.api.createRoom(payload).subscribe({
+      next: () => this.loadRooms(),
+      error: (err) => console.error('Failed to create room', err),
     });
   }
 
   joinRoomById(roomId: number): void {
-    this.api.joinRoomById(roomId).subscribe((room) => {
-      this.addRoomToState(room);
+    this.api.joinRoomById(roomId).subscribe({
+      next: () => this.loadRooms(),
+      error: (err) => console.error('Failed to join room', err),
+    });
+  }
+
+  refreshRoom(roomId: number): void {
+    this.api.getRoom(roomId).subscribe((room) => {
+      this.addRoomToState(this.normalizeRoom(room));
+    });
+  }
+
+  openRoom(roomId: number): void {
+    this.api.getRoom(roomId).subscribe((room) => {
+      this.addRoomToState(this.normalizeRoom(room));
+      this.socket.subscribeToRoom(roomId);
     });
   }
 
   private addRoomToState(room: ChatRoom): void {
-    const exists = this._rooms().some((r) => r.id === room.id);
-
-    if (exists) return;
-
-    this._rooms.update((list) => [...list, room]);
+    this._rooms.update((list) => {
+      const index = list.findIndex((r) => r.id === room.id);
+      if (index > -1) {
+        const newList = [...list];
+        newList[index] = room;
+        return newList;
+      }
+      return [...list, room];
+    });
 
     this._members.update((state) => ({
       ...state,
       [room.id]: room.registeredUsers ?? [],
     }));
 
-    this._messages.update((state) => ({
-      ...state,
-      [room.id]: room.chatMessages ?? [],
-    }));
+    this._messages.update((state) => {
+      const existing = state[room.id] ?? [];
+      const incoming = room.chatMessages ?? [];
+      const combined = [...existing];
 
-    this.socket.subscribeToRoom(room.id);
+      incoming.forEach((msg) => {
+        const hasId = msg.id !== undefined && msg.id !== null;
+        const isDuplicate = hasId 
+          ? combined.some((m) => m.id === msg.id)
+          : combined.some((m) => m.message === msg.message && m.creationDate === msg.creationDate);
+
+        if (!isDuplicate) {
+          combined.push(msg);
+        }
+      });
+
+      combined.sort((a, b) => {
+        const dateA = a.creationDate ? new Date(a.creationDate).getTime() : 0;
+        const dateB = b.creationDate ? new Date(b.creationDate).getTime() : 0;
+        return dateA - dateB;
+      });
+
+      return {
+        ...state,
+        [room.id]: combined,
+      };
+    });
   }
 
   addMember(roomId: number, user: RegisteredUser): void {
@@ -99,5 +161,16 @@ export class ChatRoomStateService {
 
   membersForRoom(roomId: number): RegisteredUser[] {
     return this._members()[roomId] ?? [];
+  }
+
+  private normalizeRoom(room: any): ChatRoom {
+    return {
+      id: room.id,
+      name: room.name,
+      description: room.description,
+      ownerId: String(room.ownerId ?? room.ownerId ?? ''),
+      registeredUsers: room.registeredUsers ?? room.users ?? [],
+      chatMessages: room.chatMessages ?? room.messages ?? [],
+    };
   }
 }

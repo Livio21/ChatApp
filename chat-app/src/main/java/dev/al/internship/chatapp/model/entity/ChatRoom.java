@@ -32,6 +32,6 @@ public class ChatRoom {
     )
     private Set<User> registeredUsers;
 
-    @OneToMany(mappedBy = "roomId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private Set<ChatMessage> chatMessages;
 }

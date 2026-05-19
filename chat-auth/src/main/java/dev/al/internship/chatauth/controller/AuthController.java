@@ -30,10 +30,10 @@ public class AuthController {
         return authService.loginUser(loginReq);
     }
 
-    @GetMapping("/test-auth")
-    public String testAuth() {
-        return "Success";
-    }
+//    @GetMapping("/test-auth")
+//    public String testAuth() {
+//        return "Success";
+//    }
 
 
 

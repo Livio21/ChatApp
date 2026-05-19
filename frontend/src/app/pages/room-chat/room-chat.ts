@@ -38,6 +38,7 @@ export class RoomChat implements OnDestroy {
 
     return this.roomsService.messages()[id] ?? [];
   });
+  protected readonly currentUsername = computed(() => this.auth.getUsername());
   protected readonly newMessage = signal('');
 
   constructor() {
@@ -58,6 +59,10 @@ export class RoomChat implements OnDestroy {
 
       this.roomId.set(id);
 
+      if (id !== null) {
+        this.roomsService.openRoom(id);
+      }
+
     });
   }
 
@@ -76,9 +81,8 @@ export class RoomChat implements OnDestroy {
 
     this.socket.sendMessage(id, {
       message: text,
-      sender: this.auth.getUsername(),
-      creationDate: new Date().toISOString(),
       messageType: ChatMessageType.CHAT_MESSAGE,
+      roomId: id.toString(),
     });
 
     this.newMessage.set('');

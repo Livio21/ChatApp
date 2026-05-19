@@ -21,7 +21,7 @@ public class WsEventListener {
     @EventListener
     public void handleWsDisconnectListener( SessionDisconnectEvent e ){
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(e.getMessage());
-        String username = (String) headerAccessor.getSessionAttributes().get("username");
+        String username = headerAccessor.getSessionAttributes().get("principal").toString();
 
         if (username == null) {
             return;

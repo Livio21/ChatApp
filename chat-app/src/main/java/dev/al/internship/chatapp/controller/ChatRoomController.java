@@ -77,8 +77,8 @@ public class ChatRoomController {
 //    }
 
     @GetMapping("/chat-rooms")
-    public List<ChatRoom> getChatRooms() {
-        return chatRoomService.getAllChatRooms();
+    public List<ChatRoomDto> getChatRooms() {
+        return chatRoomService.getAllChatRoomsDto();
     }
 
     @PostMapping("/add-room")

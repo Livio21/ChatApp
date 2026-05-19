@@ -3,7 +3,6 @@ package dev.al.internship.chatapp.service;
 import dev.al.internship.chatapp.model.entity.User;
 import dev.al.internship.chatapp.repository.UserRepository;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 

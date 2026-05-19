@@ -1,5 +1,6 @@
 package dev.al.internship.chatapp.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,7 +24,8 @@ public class ChatMessage {
     @Enumerated(EnumType.STRING)
     private MessageType messageType;
 
+
     @ManyToOne
     @JoinColumn(name = "room_id")
-    private ChatRoom roomId;
+    private ChatRoom room;
 }

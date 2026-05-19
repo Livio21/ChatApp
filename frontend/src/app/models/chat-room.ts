@@ -2,7 +2,6 @@ export interface RegisteredUser {
   id: number;
   username: string;
   email: string;
-  role: string;
 }
 
 export interface ChatMessage {
@@ -11,8 +10,9 @@ export interface ChatMessage {
   sender: string;
   creationDate: string;
   messageType: string;
-  room: string;
+  roomId: string;
 }
+
 export interface ChatRoom {
   id: number;
   name: string;

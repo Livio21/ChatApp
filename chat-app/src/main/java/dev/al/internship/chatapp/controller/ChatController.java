@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
@@ -27,12 +26,22 @@ public class ChatController {
             @Payload ChatMessageDto message,
             Principal principal
     ) {
-        chatRoomService.assertMember(roomId, principal.getName());
-        ChatMessageDto processed = messageService.processIncoming(message);
+
+//        chatRoomService.assertMember(roomId, principal.getName());
+
+
+                messageService.processIncoming(
+                        roomId,
+                        message,
+                        principal.getName()
+                );
+
+
+
 
         messagingTemplate.convertAndSend(
                 "/topic/messages/" + roomId,
-                processed
+                message
         );
     }
 }

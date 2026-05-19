@@ -10,10 +10,12 @@ export enum ChatMessageType {
 }
 
 export interface ChatMessagePayload {
+  id?: number;
   message?: string;
-  sender?: string | null;
+  sender?: string;
   creationDate?: string;
   messageType: ChatMessageType;
+  roomId?: string;
 }
 
 @Injectable({
@@ -38,10 +40,17 @@ export class ChatSocketService {
     }
 
     this.client = new Client({
-      brokerURL: 'ws://localhost:8081/ws',
+      brokerURL: 'ws://127.0.0.1:8081/ws',
       reconnectDelay: 5000,
       connectHeaders: token ? { Authorization: `Bearer ${token}` } : {},
-      onConnect: () => console.log('CONNECTED'),
+      onConnect: () => {
+        console.log('CONNECTED');
+        this.isConnected = true;
+      },
+      onDisconnect: () => {
+        console.log('DISCONNECTED');
+        this.isConnected = false;
+      }
     });
 
     this.client.activate();
@@ -78,9 +87,8 @@ export class ChatSocketService {
     this.roomSubscriptions.set(roomId, subscription);
 
     this.sendMessage(roomId, {
-      sender: this.auth.getUsername(),
-      creationDate: new Date().toISOString(),
       messageType: ChatMessageType.JOIN,
+      roomId: roomId.toString(),
     });
   }
 
@@ -92,9 +100,8 @@ export class ChatSocketService {
     this.roomSubscriptions.delete(roomId);
 
     this.sendMessage(roomId, {
-      sender: this.auth.getUsername(),
-      creationDate: new Date().toISOString(),
       messageType: ChatMessageType.LEAVE,
+      roomId: roomId.toString(),
     });
   }
 
@@ -105,7 +112,7 @@ export class ChatSocketService {
     }
 
     this.client.publish({
-      destination: `/topic/messages/${roomId}`,
+      destination: `/app/chat/${roomId}`,
       body: JSON.stringify(payload),
     });
   }

@@ -9,12 +9,12 @@ import { ChatRoom ,RegisteredUser,ChatMessage} from "../models/chat-room";
 export class ChatRoomApiService {
   private readonly http = inject(HttpClient);
 
-  createRoom(payload: { name: string; description: string }): Observable<ChatRoom> {
-    return this.http.post<ChatRoom>(`/api/add-room`, payload);
+  createRoom(room: Partial<ChatRoom>): Observable<void> {
+    return this.http.post<void>(`/api/add-room`, room);
   }
 
-  joinRoomById(roomId: number): Observable<ChatRoom> {
-    return this.http.post<ChatRoom>(`/api/chat-rooms/${roomId}/join`, {});
+  joinRoomById(roomId: number): Observable<void> {
+    return this.http.post<void>(`/api/chat-rooms/${roomId}/join`, {});
   }
 
   getRooms(): Observable<ChatRoom[]> {

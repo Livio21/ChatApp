@@ -42,6 +42,9 @@ export class RoomMembers {
         return;
       }
       this.roomId.set(id);
+      if (id !== null) {
+        this.roomsService.refreshRoom(id);
+      }
     });
   }
 

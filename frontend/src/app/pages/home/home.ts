@@ -13,8 +13,11 @@ export class Home {
   protected readonly roomsService = inject(ChatRoomStateService);
   protected readonly rooms = this.roomsService.rooms;
   protected readonly hasRooms = this.roomsService.hasRooms;
-
   protected readonly joinCodeInput = signal('');
+
+  constructor() {
+    this.roomsService.loadRooms();
+  }
 
   protected setJoinCode(value: string): void {
     this.joinCodeInput.set(value);

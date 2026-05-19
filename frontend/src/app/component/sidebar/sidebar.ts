@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../services/auth-service';
 import { ChatRoomStateService } from '../../services/chat-state.service';
@@ -20,6 +20,7 @@ export class Sidebar {
   private readonly roomsService = inject(ChatRoomStateService);
   private readonly router = inject(Router);
 
+  protected readonly currentUsername = computed(() => this.auth.getUsername());
   protected readonly rooms = this.roomsService.rooms;
   protected readonly joinCodeInput = signal('');
 

@@ -7,26 +7,39 @@ import { SignUpRequest } from '../models/sign-up-request';
 
 const TOKEN_KEY = 'access_token';
 const USERNAME = 'user_name';
-
+const EXPIRATION = 'expiration_date';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private readonly http = inject(HttpClient);
-  /** Dev server proxies /api → http://localhost:8080 (see proxy.conf.json). */
+
   private readonly baseUrl = '/auth';
 
   getStoredToken(): string | null {
+    const expiration = localStorage.getItem(EXPIRATION);
+
+    if (expiration) {
+      const expirationTime = new Date(expiration).getTime();
+
+      if (Date.now() >= expirationTime) {
+        this.clearToken();
+        return null;
+      }
+    }
+
     return localStorage.getItem(TOKEN_KEY);
   }
 
   getUsername(): string | null {
     return localStorage.getItem(USERNAME);
   }
+
   clearToken(): void {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USERNAME);
+    localStorage.removeItem(EXPIRATION);
   }
 
   signIn(req: SignInRequest): Observable<Jwt> {
@@ -35,6 +48,7 @@ export class AuthService {
         if (res?.token) {
           localStorage.setItem(TOKEN_KEY, res.token);
           localStorage.setItem(USERNAME, res.username);
+          localStorage.setItem(EXPIRATION, res.expiration);
         }
       }),
     );
@@ -46,6 +60,10 @@ export class AuthService {
         if (res?.token) {
           localStorage.setItem(TOKEN_KEY, res.token);
           localStorage.setItem(USERNAME, res.username);
+
+          if (res.expiration) {
+            localStorage.setItem(EXPIRATION, res.expiration);
+          }
         }
       }),
     );

@@ -1,6 +1,7 @@
 package dev.al.internship.chatapp.service;
 
 import dev.al.internship.chatapp.model.dto.ChatMessageDto;
+import dev.al.internship.chatapp.model.dto.ChatRoomDto;
 import dev.al.internship.chatapp.model.dto.UserDto;
 import dev.al.internship.chatapp.model.entity.ChatMessage;
 import dev.al.internship.chatapp.model.entity.ChatRoom;
@@ -31,6 +32,20 @@ public class ChatRoomService {
 
     public List<ChatRoom> getAllChatRooms() {
         return chatRoomRepository.findAll();
+    }
+
+    public List<ChatRoomDto> getAllChatRoomsDto() {
+        return chatRoomRepository.findAll()
+                .stream()
+                .map(room -> new ChatRoomDto(
+                        room.getId(),
+                        room.getName(),
+                        room.getDescription(),
+                        room.getOwnerId(),
+                        getUsers(room.getId()),
+                        getMessages(room.getId())
+                ))
+                .collect(Collectors.toList());
     }
 
     public ChatRoom createChatRoom(ChatRoom chatRoom) {
