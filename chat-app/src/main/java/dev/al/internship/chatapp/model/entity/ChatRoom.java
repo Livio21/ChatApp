@@ -24,6 +24,7 @@ public class ChatRoom {
     private String description;
 
     @ManyToOne()
+    @JoinColumn(name = "owner_id")
     private User owner;
 
     @ManyToMany
@@ -32,8 +33,8 @@ public class ChatRoom {
             joinColumns = @JoinColumn(name = "room_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private Set<User> registeredUsers;
+    private Set<User> registeredUsers = new HashSet<>();
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
-    private Set<ChatMessage> chatMessages;
+    private Set<ChatMessage> chatMessages = new HashSet<>();
 }

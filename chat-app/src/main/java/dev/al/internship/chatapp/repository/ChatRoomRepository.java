@@ -16,7 +16,7 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
     SELECT DISTINCT r
     FROM ChatRoom r
     JOIN r.registeredUsers u
-    WHERE u.username = :username
+    WHERE u.id = :userId
 """)
-    List<ChatRoom> findAllByMemberUsername(String username);
+    List<ChatRoom> findAllByMemberId(Long userId);
 }

@@ -7,6 +7,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.stereotype.Service;
 
 
+
 @Service
 public class UserService {
 
@@ -22,27 +23,21 @@ public class UserService {
                 (JwtAuthenticationToken) authentication;
 
         Long userId =
-                Long.parseLong(jwt.getToken().getSubject());
+                Long.parseLong(jwt.getName());
 
         String username =
-                jwt.getToken().getClaim("username");
+                jwt.getToken().getClaimAsString("username");
 
         String email =
-                jwt.getToken().getClaim("email");
+                jwt.getToken().getClaimAsString("email");
+
+
 
 
         return userRepository.findById(userId)
-                .map(existing -> {
-
-                    existing.setUsername(username);
-                    existing.setEmail(email);
-
-                    return userRepository.save(existing);
-                })
                 .orElseGet(() -> {
 
                     User user = new User();
-
                     user.setId(userId);
                     user.setUsername(username);
                     user.setEmail(email);

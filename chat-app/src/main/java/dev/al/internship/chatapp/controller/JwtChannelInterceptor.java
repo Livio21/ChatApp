@@ -69,7 +69,7 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
 
             Authentication authentication =
                     new UsernamePasswordAuthenticationToken(
-                            jwt.getClaims().get("username").toString(),
+                            jwt.getClaimAsString("username"),
                             null,
                             List.of()
                     );

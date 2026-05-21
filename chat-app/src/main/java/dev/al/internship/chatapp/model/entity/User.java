@@ -23,7 +23,7 @@ public class User {
     private String username;
     private String email;
 
-    @OneToMany()
-    private Set<ChatRoom> chatRoomSet;
+    @OneToMany( mappedBy = "owner")
+    private Set<ChatRoom> ownedRooms;
 
 }

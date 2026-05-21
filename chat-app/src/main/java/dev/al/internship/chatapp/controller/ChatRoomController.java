@@ -10,10 +10,8 @@ import dev.al.internship.chatapp.service.UserService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -85,12 +83,15 @@ public class ChatRoomController {
 
     @PostMapping("/add-room")
     public void addRoom(
-            @RequestBody ChatRoom chatRoom,
+            @RequestBody ChatRoomDto chatRoomDto,
             Authentication authentication
     ) {
-
         User user = userService.syncUser(authentication);
+        ChatRoom chatRoom = new ChatRoom();
+        chatRoom.setName(chatRoomDto.getName());
+        chatRoom.setDescription(chatRoomDto.getDescription());
         chatRoom.setOwner(user);
+        chatRoom.getRegisteredUsers().add(user);
         chatRoomService.createChatRoom(chatRoom);
     }
 
@@ -101,9 +102,7 @@ public class ChatRoomController {
     ) {
 
         User user = userService.syncUser(authentication);
-
         chatRoomService.joinRoom(roomId, user.getId());
-
     }
 
     @PostMapping("/chat-rooms/{roomId}/remove/{userId}")

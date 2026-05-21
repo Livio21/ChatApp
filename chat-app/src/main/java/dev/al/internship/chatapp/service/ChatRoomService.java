@@ -9,6 +9,7 @@ import dev.al.internship.chatapp.model.entity.User;
 import dev.al.internship.chatapp.repository.ChatRoomRepository;
 import dev.al.internship.chatapp.repository.UserRepository;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -19,6 +20,9 @@ public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final UserRepository userRepository;
+
+
+
 
     public ChatRoomService(ChatRoomRepository chatRoomRepository, UserRepository userRepository) {
         this.chatRoomRepository = chatRoomRepository;
@@ -36,7 +40,7 @@ public class ChatRoomService {
 
     public List<ChatRoomDto> getAllChatRoomsDtoWhereMember( Authentication authentication) {
 
-          Optional<User> authUser = userRepository.findByUsername(authentication.getName());
+//          Optional<User> authUser = userRepository.findByUsername(authentication.getClaimAsString("username"));
 
 //        List<ChatRoomDto> chatrooms =  chatRoomRepository.findAll()
 //                .stream()
@@ -50,8 +54,13 @@ public class ChatRoomService {
 //                ))
 //                .toList();
 //        return chatrooms;
-        if (authUser.isPresent() ) {
-        return chatRoomRepository.findAllByMemberUsername(authUser.get().getUsername())
+
+
+//        authUser.ifPresent(user -> System.out.println("USER: " + user));
+
+
+
+        List<ChatRoomDto> chatRoomDtoList =  chatRoomRepository.findAllByMemberId(Long.valueOf(authentication.getName()))
                 .stream()
                 .map(room -> new ChatRoomDto(
                         room.getId(),
@@ -79,10 +88,7 @@ public class ChatRoomService {
                                 .collect(Collectors.toSet())
                 ))
                 .toList();
-        }else {
-            return null;
-        }
-
+    return chatRoomDtoList;
     }
 
     public ChatRoom createChatRoom(ChatRoom chatRoom) {
